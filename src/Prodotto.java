@@ -1,4 +1,6 @@
-public class Prodotto implements Cloneable {
+import java.io.Serializable;
+
+public class Prodotto implements Cloneable, Serializable {
 
     private int codice;
     private String titolo;

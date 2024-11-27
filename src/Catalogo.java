@@ -1,15 +1,16 @@
+import java.io.Serializable;
 import java.util.HashMap;
 
 // eccezioni sollevate dai metodi della classe Catalogo
-class TroppiProdotti extends Exception {
+class TroppiProdotti extends Exception implements Serializable {
 }
-class ProdottoEsistente extends Exception {
+class ProdottoEsistente extends Exception implements Serializable {
 }
-class ProdottoInesistente extends Exception {
+class ProdottoInesistente extends Exception implements Serializable {
 }
 
 
-public class Catalogo {
+public class Catalogo implements Serializable {
 
     final static int NUMERO_MASSIMO_PRODOTTI = 100000;
 
@@ -46,7 +47,7 @@ public class Catalogo {
 
 
     // eliminazione di un prodotto dal catalogo a partire dal titolo
-    public void eliminaProdotto(String titolo)throws ProdottoInesistente {
+    public void eliminaProdotto(String titolo) throws ProdottoInesistente {
         for (Prodotto prodotto : prodotti.values())
             if (prodotto.getTitolo().equals(titolo))
                 eliminaProdotto(prodotto.getCodice());
@@ -55,7 +56,7 @@ public class Catalogo {
 
 
     // ricerca di un prodotto nel catalogo a partire dal codice
-    public Prodotto cercaProdotto(int codice)throws ProdottoInesistente {
+    public Prodotto cercaProdotto(int codice) throws ProdottoInesistente {
         if (prodotti.isEmpty() || !prodotti.containsKey(codice))
             throw new ProdottoInesistente();
         try {
@@ -86,4 +87,5 @@ public class Catalogo {
         Prodotto[] tmp = (Prodotto[]) prodotti.values().toArray();
         return tmp;
     }
+
 }

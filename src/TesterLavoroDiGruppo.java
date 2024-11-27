@@ -8,14 +8,14 @@ public class TesterLavoroDiGruppo {
     static Carrello carrello;
 
     static String path;
-    static File fileSer;
+    static File file;
 
 
     public static void inizializzaVariabili(){
         catalogo = new Catalogo();
         carrello = new Carrello();
-        path = "FileSer.ser";
-        fileSer = creaFile();
+        path = "FileSer.txt";
+        file = creaFile();
     }
 
 
@@ -27,8 +27,9 @@ public class TesterLavoroDiGruppo {
         int scelta;
         do{
             stampaOperazioni();
-            scelta = chiediInt("Scegli un'operazione");
+            scelta = chiediInt("Scegli un'operazione: ");
             esegui(scelta);
+            System.out.println();
         } while (scelta != Operazione.EXIT.numeroOperazione);
 
         registraInformazioni();
@@ -60,6 +61,13 @@ public class TesterLavoroDiGruppo {
             case RIMUOVI_PRODOTTO_DAL_CARRELLO:
                 rimuoviProdottoDalCarrello();
                 break;
+            case STAMPA_CATALOGO:
+                try {
+                    System.out.println(catalogo.cercaProdotto(1));
+                } catch (ProdottoInesistente e) {
+                    throw new RuntimeException(e);
+                }
+                break;
         }
     }
 
@@ -73,20 +81,111 @@ public class TesterLavoroDiGruppo {
     }
 
 
-    public static void aggiungiProdottoAlCatalogo(){
+    public static void stampaTipiProdotti(){
+        System.out.printf("Tipi prodotto: ");
+        for (TipoProdotto tipoProdotto : TipoProdotto.values()) System.out.println(tipoProdotto.numeroTipo + ") " + tipoProdotto.descrizioneTipo);
+    }
 
+
+    public static TipoProdotto chiediTipoProdotto(String messaggio){
+        stampaTipiProdotti();
+        int scelta = chiediInt(messaggio);
+
+        TipoProdotto tipoProdotto;
+        try{
+            tipoProdotto = TipoProdotto.values()[scelta];
+            return tipoProdotto;
+        } catch (ArrayIndexOutOfBoundsException ex){
+            System.out.println("Tipo di prodotto inesistente");
+        }
+
+        return null;
+    }
+
+
+    public static Prodotto creaNuovoProdotto(){
+        TipoProdotto tipoProdotto = chiediTipoProdotto("Scegli il tipo di prodotto: ");
+        if(tipoProdotto == null) return null;
+
+        int codice = chiediInt("Inserisci il codice: ");
+        String titolo = chiediStringa("Inserisci il titolo: ");
+        String descrizione = chiediStringa("Inserisci la descrizione: ");
+        int anno = chiediInt("Inserisci l'anno: ");
+        float prezzo = chiediFloat("Inserisci il prezzo: ");
+        int quantita = chiediInt("Inserisci la quantità: ");
+
+        String autore;
+        float durata;
+
+        switch(tipoProdotto){
+            case LIBRO:
+                autore = chiediStringa("Inserisci l'autore: ");
+                String editore = chiediStringa("Inserisci l'editore: ");
+                int pagine = chiediInt("Inserisci le pagine: ");
+
+                Libro libro = new Libro(codice, titolo, descrizione, anno, prezzo, quantita, autore, editore, pagine);
+                return libro;
+
+            case CD:
+                autore = chiediStringa("Inserisci l'autore: ");
+                String esecutore = chiediStringa("Inserisci l'esecutore: ");
+                durata = chiediFloat("Inserisci la durata: ");
+
+                CD cd = new CD(codice, titolo, descrizione, anno, prezzo, quantita, autore, esecutore, durata);
+                return cd;
+
+            case DVD:
+                String regista = chiediStringa("Inserisci il regista: ");
+                String produttore = chiediStringa("Inserisci il produttore: ");
+                durata = chiediFloat("Inserisci la durata: ");
+
+                DVD dvd = new DVD(codice, titolo, descrizione, anno, prezzo, quantita, regista, produttore, durata);
+                return dvd;
+        }
+
+        return null;
+    }
+
+
+    public static void aggiungiProdottoAlCatalogo(){
+        Prodotto prodotto = creaNuovoProdotto();
+        if(prodotto == null) {
+            System.out.println("La creazione del prodotto non è andata a buon fine");
+            return;
+        }
+
+        try {
+            catalogo.aggiungiProdotto(prodotto);
+        } catch (TroppiProdotti e) {
+            System.out.println("Hai raggiunto il massimo dei prodotti");
+        } catch (ProdottoEsistente e) {
+            System.out.println("Il prodotto è già esistente");
+        }
     }
 
     public static void rimuoviProdottoDalCatalogo(){
-
+        int codice = chiediInt("Inserisci il codice: ");
+        try {
+            catalogo.eliminaProdotto(codice);
+        } catch (ProdottoInesistente e) {
+            System.out.println("Prodotto inesistente");
+        }
     }
 
     public static void aggiungiProdottoAlCarrello(){
+        Prodotto prodotto = creaNuovoProdotto();
+        if(prodotto == null){
+            System.out.println("La creazione del prodotto non è andata a buon fine");
+            return;
+        }
+
+        carrello.aggiungiProdotto(prodotto);
 
     }
 
     public static void rimuoviProdottoDalCarrello(){
-
+        int codice = chiediInt("Inserisci il codice: ");
+        carrello.eliminaProdotto(codice);
     }
 
 
@@ -106,6 +205,7 @@ public class TesterLavoroDiGruppo {
     }
 
 
+
     public static File creaFile(){
         File fileSer = new File(path);
         try {
@@ -121,15 +221,16 @@ public class TesterLavoroDiGruppo {
         return fileSer;
     }
 
+
     public static void prelevaInformazioni(){
         try {
-            FileInputStream fileInputStream = new FileInputStream(fileSer);
+            FileInputStream fileInputStream = new FileInputStream(file);
             ObjectInputStream objectInputStream = new ObjectInputStream(fileInputStream);
 
             try {
                 catalogo = (Catalogo) objectInputStream.readObject();
-                carrello = (Carrello) objectInputStream.readObject();
                 objectInputStream.close();
+
                 System.out.println(MessaggioSer.PRELEVAMENTO_OK.messaggio);
             } catch (ClassNotFoundException ex) {
                 System.out.println(MessaggioSer.PRELEVAMENTO_ERRORE.messaggio);
@@ -143,11 +244,10 @@ public class TesterLavoroDiGruppo {
 
     public static void registraInformazioni(){
         try {
-            FileOutputStream fileOutputStream = new FileOutputStream(fileSer);
+            FileOutputStream fileOutputStream = new FileOutputStream(file);
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
 
             objectOutputStream.writeObject(catalogo);
-            objectOutputStream.writeObject(carrello);
             objectOutputStream.flush();
             objectOutputStream.close();
 

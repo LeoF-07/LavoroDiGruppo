@@ -4,7 +4,8 @@ public enum Operazione {
     AGGIUNGI_PRODOTTO_AL_CATALOGO (1, "Aggiungi prodotto al catalogo"),
     RIMUOVI_PRODOTTO_DAL_CATALOGO (2, "Rimuovi prodotto dal catalogo"),
     AGGIUNGI_PRODOTTO_AL_CARRELLO (3, "Aggiungi prodotto al carrello"),
-    RIMUOVI_PRODOTTO_DAL_CARRELLO (4, "Rimuovi prodotto dal carrello");
+    RIMUOVI_PRODOTTO_DAL_CARRELLO (4, "Rimuovi prodotto dal carrello"),
+    STAMPA_CATALOGO (5, "Stampa il catalogo");
 
     int numeroOperazione;
     String descrizioneOperazione;
