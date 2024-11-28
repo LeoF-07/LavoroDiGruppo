@@ -39,7 +39,7 @@ public class Libro extends Prodotto implements Serializable {
 
     @Override
     public String toString() {
-        return "Libro:\n" + super.toString() + ", Autore: " + autore + ", Editore: " + ", Pagine: " + pagine;
+        return "Libro:\n" + super.toString() + ", Autore: " + getAutore() + ", Editore: " + getEditore() + ", Pagine: " + getPagine();
     }
 
 }

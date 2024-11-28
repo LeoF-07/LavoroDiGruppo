@@ -39,7 +39,7 @@ public class DVD extends Prodotto implements Serializable {
 
     @Override
     public String toString() {
-        return "DVD:\n" + super.toString() + ", Regista: " + regista + ", Produttore: " + produttore + ", Durata: " + durata;
+        return "DVD:\n" + super.toString() + ", Regista: " + getRegista() + ", Produttore: " + getProduttore() + ", Durata: " + getDurata() + "min";
     }
 
 }

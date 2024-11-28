@@ -74,8 +74,8 @@ public class Prodotto implements Cloneable, Serializable {
 
     @Override
     public String toString() {
-        return "Codice: " + codice + ", Titolo: " + titolo + ", Descrizione: " + descrizione +
-                ", Anno: " + anno + ", Prezzo: " + prezzo + ", Quantità: " + quantita;
+        return "Codice: " + getCodice() + ", Titolo: " + getTitolo() + ", Descrizione: " + getDescrizione() +
+                ", Anno: " + getAnno() + ", Prezzo: " + getPrezzo() + ", Quantità: " + getQuantita();
     }
 
 }
