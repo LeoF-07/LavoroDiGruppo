@@ -180,13 +180,11 @@ public class TesterLavoroDiGruppo {
         }
 
         try {
-            catalogo.aggiungiProdotto((Prodotto) prodotto.clone());
+            catalogo.aggiungiProdotto(prodotto);
         } catch (TroppiProdotti e) {
             System.out.println(e.getMsg());
         } catch (ProdottoEsistente e) {
             System.out.println(e.getMsg());
-        } catch (CloneNotSupportedException e) {
-            throw new RuntimeException(e);
         }
     }
 
@@ -199,11 +197,11 @@ public class TesterLavoroDiGruppo {
         }
     }
 
-    public static void aggiungiProdottoAlCarrello(String titolo, int quantità){
+    public static void aggiungiProdottoAlCarrello(String titolo, int quantita){
         try {
             Prodotto prodotto = (Prodotto) catalogo.cercaProdotto(titolo).clone();
-            if(prodotto.getQuantita() >= quantità) {
-                prodotto.setQuantita(quantità);
+            if(prodotto.getQuantita() >= quantita) {
+                prodotto.setQuantita(quantita);
                 carrello.aggiungiProdotto(prodotto);
             }
             else System.out.println("Disponibilità insufficiente");
