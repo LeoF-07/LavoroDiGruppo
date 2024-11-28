@@ -37,4 +37,9 @@ public class Libro extends Prodotto implements Serializable {
         this.pagine = pagine;
     }
 
+    @Override
+    public String toString() {
+        return "Libro:\n" + super.toString() + ", Autore: " + autore + ", Editore: " + ", Pagine: " + pagine;
+    }
+
 }

@@ -2,11 +2,28 @@ import java.io.Serializable;
 import java.util.HashMap;
 
 // eccezioni sollevate dai metodi della classe Catalogo
-class TroppiProdotti extends Exception implements Serializable {
+class TroppiProdotti extends Exception {
+    private String msg = "Hai ragggiunto il massimo dei prodotti!";
+
+    public String getMsg() {
+        return msg;
+    }
 }
-class ProdottoEsistente extends Exception implements Serializable {
+
+class ProdottoEsistente extends Exception {
+    private String msg = "Prodotto già esistente!";
+
+    public String getMsg() {
+        return msg;
+    }
 }
-class ProdottoInesistente extends Exception implements Serializable {
+
+class ProdottoInesistente extends Exception {
+    private String msg = "Prodotto inesistente!";
+
+    public String getMsg() {
+        return msg;
+    }
 }
 
 
@@ -83,9 +100,25 @@ public class Catalogo implements Serializable {
 
     // restituzione di un vettore contenente i prodotti del catalogo
     public Prodotto[] elencaProdotti() {
-        // Secondo me devo fare un for che mi mette su tmp uno alla volta le cose castate, perche mi fa strano nche non raggiunge il return
-        Prodotto[] tmp = (Prodotto[]) prodotti.values().toArray();
+        Prodotto[] tmp = new Prodotto[prodotti.size()];
+        for(int i = 0; i < prodotti.size(); i++){
+            tmp[i] = (Prodotto) prodotti.values().toArray()[i];
+        }
+
         return tmp;
+    }
+
+    @Override
+    public String toString(){
+        Prodotto[] prodotti = elencaProdotti();
+
+        String s = "Catalogo:\n";
+        if(prodotti.length == 0) return s + "Vuoto";
+        for (int i = 0; i < prodotti.length; i++){
+            s += (i + 1) + ") " + prodotti[i].toString() + "\n";
+        }
+
+        return s;
     }
 
 }

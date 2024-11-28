@@ -19,9 +19,25 @@ public class TesterLavoroDiGruppo {
     }
 
 
+    public static void popolaCatalogo(){
+        try {
+            catalogo.aggiungiProdotto(new Libro(1, "Geronimo Stilton", "Libro1", 2008, 15.50f, 10, "Elisabetta Dami", "Mondadori", 150));
+            catalogo.aggiungiProdotto(new CD(2, "Zecchino d'Oro", "CD1", 2005, 10, 5, "Gianfranco Fasano", "Radio", 5.15f));
+            catalogo.aggiungiProdotto(new DVD(3, "Spider-Man", "CD1", 2002, 20.19f, 38, "Sam Raimi", "Laura Ziskin", 121));
+        } catch (TroppiProdotti e) {
+            System.out.println(e.getMsg());
+        } catch (ProdottoEsistente e) {
+            System.out.println(e.getMsg());
+        }
+    }
+
+
     public static void main(String[] args) {
         stampaDescrizione();
         inizializzaVariabili();
+
+        //popolaCatalogo(); //Ho usato la serializzazione, quindi i prodotti aggiunti nel catalogo su questo metodo sono già salvati
+
         prelevaInformazioni();
 
         int scelta;
@@ -33,7 +49,7 @@ public class TesterLavoroDiGruppo {
         } while (scelta != Operazione.EXIT.numeroOperazione);
 
         registraInformazioni();
-        System.out.println("Programma terminato");
+        System.out.println("\nProgramma terminato, arrivederci!");
     }
 
     public static void esegui(int scelta){
@@ -56,17 +72,26 @@ public class TesterLavoroDiGruppo {
                 rimuoviProdottoDalCatalogo();
                 break;
             case AGGIUNGI_PRODOTTO_AL_CARRELLO:
-                aggiungiProdottoAlCarrello();
+                System.out.println(catalogo.toString());
+                String titolo = chiediStringa("Inserisci il titolo del prodotto da aggiungere al carrello: ");
+                int quantità = chiediInt("Inserisci la quantità di prodotti da aggiungere al carrello: ");
+                aggiungiProdottoAlCarrello(titolo, quantità);
                 break;
             case RIMUOVI_PRODOTTO_DAL_CARRELLO:
                 rimuoviProdottoDalCarrello();
                 break;
             case STAMPA_CATALOGO:
-                try {
-                    System.out.println(catalogo.cercaProdotto(1));
-                } catch (ProdottoInesistente e) {
-                    throw new RuntimeException(e);
-                }
+                System.out.println(catalogo.toString());
+                break;
+            case STAMPA_CARRELLO:
+                System.out.println(carrello.toString());
+                break;
+            case CALCOLO_IMPORTO:
+                System.out.println("Importo: " + carrello.calcolaImporto());
+                break;
+            case CERCA_PRODOTTO:
+                int codice = chiediInt("Inserisci il codice del prodotto: ");
+                cercaProdotto(codice);
                 break;
         }
     }
@@ -157,9 +182,9 @@ public class TesterLavoroDiGruppo {
         try {
             catalogo.aggiungiProdotto(prodotto);
         } catch (TroppiProdotti e) {
-            System.out.println("Hai raggiunto il massimo dei prodotti");
+            System.out.println(e.getMsg());
         } catch (ProdottoEsistente e) {
-            System.out.println("Il prodotto è già esistente");
+            System.out.println(e.getMsg());
         }
     }
 
@@ -168,24 +193,40 @@ public class TesterLavoroDiGruppo {
         try {
             catalogo.eliminaProdotto(codice);
         } catch (ProdottoInesistente e) {
-            System.out.println("Prodotto inesistente");
+            System.out.println(e.getMsg());
         }
     }
 
-    public static void aggiungiProdottoAlCarrello(){
-        Prodotto prodotto = creaNuovoProdotto();
-        if(prodotto == null){
-            System.out.println("La creazione del prodotto non è andata a buon fine");
-            return;
+    public static void aggiungiProdottoAlCarrello(String titolo, int quantità){
+        try {
+            Prodotto prodotto = (Prodotto) catalogo.cercaProdotto(titolo).clone();
+            if(prodotto.getQuantita() >= quantità) {
+                prodotto.setQuantita(quantità);
+                carrello.aggiungiProdotto(prodotto);
+            }
+            else System.out.println("Disponibilità insufficiente");
+        } catch (ProdottoInesistente e) {
+            System.out.println(e.getMsg());
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
         }
-
-        carrello.aggiungiProdotto(prodotto);
-
     }
 
     public static void rimuoviProdottoDalCarrello(){
         int codice = chiediInt("Inserisci il codice: ");
         carrello.eliminaProdotto(codice);
+    }
+
+    public static void cercaProdotto(int codice){
+        try {
+            Prodotto prodotto = catalogo.cercaProdotto(codice);
+            if(prodotto != null) {
+                System.out.println("Prodotto trovato!");
+                System.out.println(prodotto.toString());
+            }
+        } catch (ProdottoInesistente e) {
+            System.out.println(e.getMsg());
+        }
     }
 
 
@@ -229,6 +270,7 @@ public class TesterLavoroDiGruppo {
 
             try {
                 catalogo = (Catalogo) objectInputStream.readObject();
+                carrello = (Carrello) objectInputStream.readObject();
                 objectInputStream.close();
 
                 System.out.println(MessaggioSer.PRELEVAMENTO_OK.messaggio);
@@ -248,6 +290,7 @@ public class TesterLavoroDiGruppo {
             ObjectOutputStream objectOutputStream = new ObjectOutputStream(fileOutputStream);
 
             objectOutputStream.writeObject(catalogo);
+            objectOutputStream.writeObject(carrello);
             objectOutputStream.flush();
             objectOutputStream.close();
 

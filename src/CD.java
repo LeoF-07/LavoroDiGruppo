@@ -37,4 +37,9 @@ public class CD extends Prodotto implements Serializable {
         this.durata = durata;
     }
 
+    @Override
+    public String toString() {
+        return "CD:\n" + super.toString() + ", Autore: " + autore + ", Esecutore: " + esecutore + ", Durata: " + durata;
+    }
+
 }

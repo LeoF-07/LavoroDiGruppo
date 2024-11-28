@@ -71,4 +71,11 @@ public class Prodotto implements Cloneable, Serializable {
     public void setQuantita(int quantita) {
         this.quantita = quantita;
     }
+
+    @Override
+    public String toString() {
+        return "Codice: " + codice + ", Titolo: " + titolo + ", Descrizione: " + descrizione +
+                ", Anno: " + anno + ", Prezzo: " + prezzo + ", Quantità: " + quantita;
+    }
+
 }

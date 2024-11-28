@@ -45,8 +45,26 @@ public class Carrello implements Serializable {
         Prodotto prodotto;
         while (i.hasNext()) {
             prodotto = i.next();
-            totale += prodotto.getPrezzo()*prodotto.getQuantita();
+            totale += prodotto.getPrezzo() * prodotto.getQuantita();
         }
         return totale;
     }
+
+    @Override
+    public String toString() {
+        String output = "Carrello:\n";
+        Iterator<Prodotto> i = prodotti.iterator();
+        Prodotto prodotto;
+        int contatore = 0;
+
+        if(!i.hasNext()) return output + "Vuoto";
+
+        while (i.hasNext()) {
+            prodotto = i.next();
+            output += (contatore + 1) + ") " + prodotto.toString() + "\n";
+            contatore++;
+        }
+        return output;
+    }
+
 }
