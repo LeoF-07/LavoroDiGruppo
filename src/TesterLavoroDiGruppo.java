@@ -180,11 +180,13 @@ public class TesterLavoroDiGruppo {
         }
 
         try {
-            catalogo.aggiungiProdotto(prodotto);
+            catalogo.aggiungiProdotto((Prodotto) prodotto.clone());
         } catch (TroppiProdotti e) {
             System.out.println(e.getMsg());
         } catch (ProdottoEsistente e) {
             System.out.println(e.getMsg());
+        } catch (CloneNotSupportedException e) {
+            throw new RuntimeException(e);
         }
     }
 
